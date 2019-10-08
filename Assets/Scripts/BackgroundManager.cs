@@ -5,6 +5,7 @@ using UnityEngine;
 public class BackgroundManager : MonoBehaviour
 {
     public Transform mainCamera;
+    public Vector3 mainCameraStartPoint = new Vector3(-10, 0, -10);
     public Transform background3, background2, background1;
     public Vector3 background3StartPoint = new Vector3(-19.2f, 0, 0);
     public float maxRangeBetweenMainCameraAndLastBackground = 35.2f;
@@ -40,7 +41,7 @@ public class BackgroundManager : MonoBehaviour
             StepBackgrounds();
         }
 
-        if (mainCameraX == 0)
+        if (mainCameraX == mainCameraStartPoint.x)
         {
             SetBackgroundsToStartPositions();
         }

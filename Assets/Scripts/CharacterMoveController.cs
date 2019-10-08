@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterMoveController : MonoBehaviour
 {
+    public int score = 0;
+
     public Vector3 startPoint = new Vector3(-10, -3, -5);
 
     public float maxSpeed = 10f;
@@ -77,15 +79,12 @@ public class CharacterMoveController : MonoBehaviour
                                                   0,
                                                   Vector2.right);
 
-        Debug.Log("Hitpoint x : " + hitPoint.point.x);
-        Debug.Log("Player x : " + transform.position.x);
         if (hitPoint)
         {
             float distance = hitPoint.point.x - transform.position.x;
 
             if (distance <= minDistanseToObjects)
             {
-                Debug.Log("was here");
                 return;
             }
         }
@@ -106,5 +105,19 @@ public class CharacterMoveController : MonoBehaviour
         }
 
         return move;
+    }
+
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag.Equals("Coin"))
+        {
+            Destroy(collision.gameObject);
+            score++;
+        }
+        if (collision.tag.Equals("Enemy"))
+        {
+            transform.position = startPoint;
+        }
     }
 }
