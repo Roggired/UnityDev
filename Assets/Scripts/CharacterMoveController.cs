@@ -21,6 +21,7 @@ public class CharacterMoveController : MonoBehaviour
     public LayerMask groundLayer;
     private bool isGrounded = true;
 
+    private bool finished = false;
 
     private Animator animator;
     private Rigidbody2D rigidbody2D;
@@ -36,9 +37,12 @@ public class CharacterMoveController : MonoBehaviour
 
     void Update()
     {
-        CheckJump();
+        if (!finished)
+        {
+            CheckJump();
 
-        CheckFocusedInCamera();
+            CheckFocusedInCamera();
+        }
     }
     private void CheckJump()
     {
@@ -60,9 +64,12 @@ public class CharacterMoveController : MonoBehaviour
 
     void FixedUpdate()
     {
-        CheckGrounded();
+        if (!finished)
+        {
+            CheckGrounded();
 
-        CheckMovenment();
+            CheckMovenment();
+        }
     }
     private void CheckGrounded()
     {
@@ -118,6 +125,12 @@ public class CharacterMoveController : MonoBehaviour
         if (collision.tag.Equals("Enemy"))
         {
             transform.position = startPoint;
+        }
+        if (collision.tag.Equals("Chest"))
+        {
+            Animator animator = collision.gameObject.GetComponent<Animator>();
+            animator.SetBool("Opened", true);
+            finished = true;
         }
     }
 }
