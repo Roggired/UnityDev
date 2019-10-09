@@ -7,6 +7,7 @@ public class CharacterMoveController : MonoBehaviour
     public int score = 0;
 
     public Vector3 startPoint = new Vector3(-10, -3, -5);
+    public float delayAfterRespawing = 5f;
 
     public float maxSpeed = 10f;
 
@@ -21,7 +22,10 @@ public class CharacterMoveController : MonoBehaviour
     public LayerMask groundLayer;
     private bool isGrounded = true;
 
+    public ParticleSystem bloodSystem;
+
     private bool finished = false;
+    private bool movable = true;
 
     private Animator animator;
     private Rigidbody2D rigidbody2D;
@@ -42,13 +46,18 @@ public class CharacterMoveController : MonoBehaviour
             CheckJump();
 
             CheckFocusedInCamera();
+
+            CheckGrounded();
+
+            CheckMovenment();
         }
     }
     private void CheckJump()
     {
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+        if (isGrounded && movable && Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetBool("Ground", false);
+            animator.SetFloat("VerticalSpeed", rigidbody2D.velocity.y);
             rigidbody2D.AddForce(spaceForce);
         }
     }
@@ -56,7 +65,7 @@ public class CharacterMoveController : MonoBehaviour
     {
         if (transform.position.y < buttomBound)
         {
-            transform.position = startPoint;
+            Respawn();
         }
     }
 
@@ -66,9 +75,9 @@ public class CharacterMoveController : MonoBehaviour
     {
         if (!finished)
         {
-            CheckGrounded();
+            //CheckGrounded();
 
-            CheckMovenment();
+            //CheckMovenment();
         }
     }
     private void CheckGrounded()
@@ -102,7 +111,10 @@ public class CharacterMoveController : MonoBehaviour
 
         animator.SetFloat("Speed", Mathf.Abs(move));
 
-        rigidbody2D.velocity = new Vector2(move * maxSpeed, rigidbody2D.velocity.y);
+        if (movable)
+        {
+            rigidbody2D.velocity = new Vector2(move * maxSpeed, rigidbody2D.velocity.y);
+        }
     }
     private float FreezeLeftMovenment(float move)
     {
@@ -124,7 +136,9 @@ public class CharacterMoveController : MonoBehaviour
         }
         if (collision.tag.Equals("Enemy"))
         {
-            transform.position = startPoint;
+            bloodSystem.transform.position = transform.position;
+            bloodSystem.Play();
+            Respawn();
         }
         if (collision.tag.Equals("Chest"))
         {
@@ -132,5 +146,20 @@ public class CharacterMoveController : MonoBehaviour
             animator.SetBool("Opened", true);
             finished = true;
         }
+    }
+    private void Respawn()
+    {
+        movable = false;
+        animator.SetBool("Movable", false);
+        animator.SetBool("Ground", true);
+        animator.SetFloat("Speed", 0f);
+        animator.SetFloat("VerticalSpeed", 0);
+        transform.position = startPoint;
+        Invoke("SetMovable", delayAfterRespawing);
+    }
+    private void SetMovable()
+    {
+        movable = true;
+        animator.SetBool("Movable", true);
     }
 }

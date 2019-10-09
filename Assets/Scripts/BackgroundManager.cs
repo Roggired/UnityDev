@@ -6,55 +6,89 @@ public class BackgroundManager : MonoBehaviour
 {
     public Transform mainCamera;
     public Vector3 mainCameraStartPoint = new Vector3(-10, 0, -10);
-    public Transform background3, background2, background1;
+    public GameObject backgroundPrefab;
+    public Transform[] backgrounds;
+    public float delayBetweenDestroyingOldBacks = 2f;
+    private Transform[] newBackgrounds;
     public Vector3 background3StartPoint = new Vector3(-19.2f, 0, 0);
     public float maxRangeBetweenMainCameraAndLastBackground = 35.2f;
     public float rangeBetweenNextBackgrounds = 19.2f;
 
+    private bool wasSteped = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        SetBackgroundsToStartPositions();
+        SetBackgroundsToStartPositions(backgrounds);
     }
-    private void SetBackgroundsToStartPositions()
+    private void SetBackgroundsToStartPositions(Transform[] backgrounds)
     {
-        background3.position = background3StartPoint;
+        backgrounds[0].position = background3StartPoint;
 
         Vector3 point = new Vector3(background3StartPoint.x + rangeBetweenNextBackgrounds,
                                     background3StartPoint.y,
                                     background3StartPoint.z);
-        background2.position = point;
+        backgrounds[1].position = point;
         point = new Vector3(point.x + rangeBetweenNextBackgrounds,
                             point.y,
                             point.z);
-        background1.position = point;
+        backgrounds[2].position = point;
+        wasSteped = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         float mainCameraX = mainCamera.position.x;
-        float lastBackgroundX = background3.position.x;
+        float lastBackgroundX = backgrounds[0].position.x;
 
         if (mainCameraX - lastBackgroundX > maxRangeBetweenMainCameraAndLastBackground)
         {
+            if (!wasSteped)
+            {
+
+                newBackgrounds = CreateNewBackgrounds();
+                SetBackgroundsToStartPositions(newBackgrounds);
+            }
             StepBackgrounds();
         }
 
-        if (mainCameraX == mainCameraStartPoint.x)
+        if (mainCameraX == mainCameraStartPoint.x && wasSteped)
         {
-            SetBackgroundsToStartPositions();
+            SetBackgroundsToStartPositions(newBackgrounds);
+            DeleteOldBackgrounds(newBackgrounds);
         }
     }
     private void StepBackgrounds()
     {
-        background3.position = new Vector3(background1.position.x + rangeBetweenNextBackgrounds,
-                                              background3.position.y,
-                                              background3.position.z);
+        backgrounds[0].position = new Vector3(backgrounds[2].position.x + rangeBetweenNextBackgrounds,
+                                              backgrounds[0].position.y,
+                                              backgrounds[0].position.z);
 
-        Transform temp = background3;
-        background3 = background2;
-        background2 = background1;
-        background1 = temp;
+        Transform temp = backgrounds[0];
+        backgrounds[0] = backgrounds[1];
+        backgrounds[1] = backgrounds[2];
+        backgrounds[2] = temp;
+
+        wasSteped = true;
+    }
+    private Transform[] CreateNewBackgrounds()
+    {
+        Transform[] array = new Transform[3];
+        array[0] = Instantiate(backgroundPrefab).transform;
+        array[1] = Instantiate(backgroundPrefab).transform;
+        array[2] = Instantiate(backgroundPrefab).transform;
+
+        return array;
+    }
+    private void DeleteOldBackgrounds(Transform[] newBackgrounds)
+    {
+        Transform[] forDestroying = { backgrounds[0], backgrounds[1], backgrounds[2] };
+        Destroy(forDestroying[0].gameObject, delayBetweenDestroyingOldBacks);
+        Destroy(forDestroying[1].gameObject, delayBetweenDestroyingOldBacks);
+        Destroy(forDestroying[2].gameObject, delayBetweenDestroyingOldBacks);
+        backgrounds[0] = newBackgrounds[0];
+        backgrounds[1] = newBackgrounds[1];
+        backgrounds[2] = newBackgrounds[2];
     }
 }

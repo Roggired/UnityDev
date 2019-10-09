@@ -6,11 +6,12 @@ public class MainCamera : MonoBehaviour
 {
     public Transform player;
     public Vector3 startPoint = new Vector3(0, 0, -10);
+    public float delayForMovingToStartPoint = 1f;
            
     // Start is called before the first frame update
     void Start()
     {
-        transform.position = startPoint;
+        MoveToStartPoint();
     }
 
     // Update is called once per frame
@@ -31,9 +32,14 @@ public class MainCamera : MonoBehaviour
     }
     private void CheckThatPlayerWasRespawn()
     {
-        if (player.position.x < startPoint.x)
+        if (player.position.x == player.gameObject.GetComponent<CharacterMoveController>().startPoint.x)
         {
-            transform.position = startPoint;
+            Invoke("MoveToStartPoint", delayForMovingToStartPoint);
         }
+    }
+    private void MoveToStartPoint()
+    {
+
+        transform.position = startPoint;
     }
 }
