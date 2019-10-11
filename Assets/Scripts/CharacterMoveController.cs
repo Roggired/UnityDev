@@ -144,16 +144,22 @@ public class CharacterMoveController : MonoBehaviour
         {
             Animator animator = collision.gameObject.GetComponent<Animator>();
             animator.SetBool("Opened", true);
-            finished = true;
+            collision.gameObject.GetComponent<ParticleSystem>().Play();
+
+            Finish();
         }
     }
-    private void Respawn()
+    private void FreezeMovability()
     {
         movable = false;
         animator.SetBool("Movable", false);
         animator.SetBool("Ground", true);
         animator.SetFloat("Speed", 0f);
         animator.SetFloat("VerticalSpeed", 0);
+    }
+    private void Respawn()
+    {
+        FreezeMovability();
         transform.position = startPoint;
         Invoke("SetMovable", delayAfterRespawing);
     }
@@ -161,5 +167,15 @@ public class CharacterMoveController : MonoBehaviour
     {
         movable = true;
         animator.SetBool("Movable", true);
+    }
+    private void Finish()
+    {
+        FreezeMovability();
+        movable = false;
+        animator.SetBool("Movable", false);
+        animator.SetBool("Ground", true);
+        animator.SetFloat("Speed", 0f);
+        animator.SetFloat("VerticalSpeed", 0);
+        finished = true;
     }
 }
