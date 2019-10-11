@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CharacterMoveController : MonoBehaviour
 {
-    public int score = 0;
-
     public Vector3 startPoint = new Vector3(-10, -3, -5);
     public float delayAfterRespawing = 5f;
 
@@ -131,8 +129,7 @@ public class CharacterMoveController : MonoBehaviour
     {
         if (collision.tag.Equals("Coin"))
         {
-            Destroy(collision.gameObject);
-            score++;
+            collision.gameObject.GetComponent<TakeCoin>().Play();
         }
         if (collision.tag.Equals("Enemy"))
         {
@@ -146,6 +143,7 @@ public class CharacterMoveController : MonoBehaviour
             animator.SetBool("Opened", true);
             collision.gameObject.GetComponent<ParticleSystem>().Play();
 
+            collision.gameObject.GetComponent<Chest>().Play();
             Finish();
         }
     }
