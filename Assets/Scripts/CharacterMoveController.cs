@@ -161,6 +161,12 @@ public class CharacterMoveController : MonoBehaviour
         transform.position = startPoint;
         Invoke("SetMovable", delayAfterRespawing);
     }
+    public void Restart()
+    {
+        FreezeMovability();
+        transform.position = startPoint;
+        Invoke("SetMovable", delayAfterRespawing);
+    }
     private void SetMovable()
     {
         movable = true;
