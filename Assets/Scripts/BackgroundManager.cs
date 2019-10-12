@@ -98,7 +98,16 @@ public class BackgroundManager : MonoBehaviour
     private void DeleteOldBackgrounds()
     {
         Transform[] forDestroying = { backgrounds[0], backgrounds[1], backgrounds[2] };
-        Destroy(forDestroying[0].gameObject, delayBetweenDestroyingOldBacks);
+
+        for (int i = 0; i < forDestroying.Length; i++)
+        {
+            Vector3 newPosition = new Vector3(forDestroying[i].transform.position.x,
+                                              forDestroying[i].transform.position.y,
+                                              forDestroying[i].transform.position.z + 4);
+            forDestroying[i].transform.position = newPosition;
+        }
+        
+            Destroy(forDestroying[0].gameObject, delayBetweenDestroyingOldBacks);
         Destroy(forDestroying[1].gameObject, delayBetweenDestroyingOldBacks);
         Destroy(forDestroying[2].gameObject, delayBetweenDestroyingOldBacks);
         backgrounds = newBackgrounds;

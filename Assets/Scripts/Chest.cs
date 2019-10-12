@@ -12,6 +12,7 @@ public class Chest : MonoBehaviour
 
     public void Play()
     {
+        GetComponent<AudioSource>().Play();
         StartCoroutine(SpawnCoins());
     }
     private IEnumerator SpawnCoins()

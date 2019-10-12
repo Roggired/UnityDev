@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterMoveController : MonoBehaviour
 {
-    public AudioClip jumpSound, deathSound;
+    public AudioClip jumpSound, deathSound, coinSound, winSound;
 
     public Vector3 startPoint = new Vector3(-10, -3, -5);
     public float delayAfterRespawing = 5f;
@@ -135,6 +135,8 @@ public class CharacterMoveController : MonoBehaviour
         if (collision.tag.Equals("Coin"))
         {
             collision.gameObject.GetComponent<TakeCoin>().Play();
+            GetComponent<AudioSource>().clip = coinSound;
+            GetComponent<AudioSource>().Play();
         }
         if (collision.tag.Equals("Enemy"))
         {
