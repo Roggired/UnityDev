@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterMoveController : MonoBehaviour
 {
+    public AudioClip jumpSound, deathSound;
+
     public Vector3 startPoint = new Vector3(-10, -3, -5);
     public float delayAfterRespawing = 5f;
 
@@ -57,6 +59,9 @@ public class CharacterMoveController : MonoBehaviour
             animator.SetBool("Ground", false);
             animator.SetFloat("VerticalSpeed", rigidbody2D.velocity.y);
             rigidbody2D.AddForce(spaceForce);
+
+            GetComponent<AudioSource>().clip = jumpSound;
+            GetComponent<AudioSource>().Play();
         }
     }
     private void CheckFocusedInCamera()
@@ -103,14 +108,14 @@ public class CharacterMoveController : MonoBehaviour
             }
         }
 
-        float move = Input.GetAxis("Horizontal");
-
-        move = FreezeLeftMovenment(move);
-
-        animator.SetFloat("Speed", Mathf.Abs(move));
-
         if (movable)
         {
+            float move = Input.GetAxis("Horizontal");
+
+            move = FreezeLeftMovenment(move);
+
+            animator.SetFloat("Speed", Mathf.Abs(move));
+
             rigidbody2D.velocity = new Vector2(move * maxSpeed, rigidbody2D.velocity.y);
         }
     }
@@ -153,17 +158,21 @@ public class CharacterMoveController : MonoBehaviour
         animator.SetBool("Movable", false);
         animator.SetBool("Ground", true);
         animator.SetFloat("Speed", 0f);
-        animator.SetFloat("VerticalSpeed", 0);
+        animator.SetFloat("VerticalSpeed", 0f);
     }
     private void Respawn()
     {
         FreezeMovability();
+        rigidbody2D.velocity = new Vector3(0, 0, 0);
         transform.position = startPoint;
         Invoke("SetMovable", delayAfterRespawing);
+        GetComponent<AudioSource>().clip = deathSound;
+        GetComponent<AudioSource>().Play();
     }
     public void Restart()
     {
         FreezeMovability();
+        rigidbody2D.velocity = new Vector3(0, 0, 0);
         transform.position = startPoint;
         Invoke("SetMovable", delayAfterRespawing);
     }

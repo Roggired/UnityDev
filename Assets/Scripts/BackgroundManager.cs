@@ -54,6 +54,7 @@ public class BackgroundManager : MonoBehaviour
         if (mainCameraX == mainCameraStartPoint.x && steped)
         {
             DeleteOldBackgrounds();
+            newBackgrounds = CreateNewBackgrounds();
             steped = false;
         }
     }
